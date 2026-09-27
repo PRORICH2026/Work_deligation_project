@@ -14,31 +14,39 @@ import "./NewDelegation.css";
 interface Department {
   id: number;
   name: string;
+  isActive?: boolean | number;
 }
 
-interface EA {
+interface EAUser {
   id: number;
   name: string;
   email: string;
+  role: string;
+  isActive?: boolean | number;
 }
 
 export default function NewDelegation() {
-  const navigate = useNavigate();
+  const navigate =
+    useNavigate();
 
   const [
     departments,
     setDepartments,
   ] = useState<Department[]>([]);
 
-  const [eas, setEas] =
-    useState<EA[]>([]);
-
-  const [title, setTitle] =
-    useState("");
+  const [
+    eaUsers,
+    setEaUsers,
+  ] = useState<EAUser[]>([]);
 
   const [
-    description,
-    setDescription,
+    title,
+    setTitle,
+  ] = useState("");
+
+  const [
+    departmentId,
+    setDepartmentId,
   ] = useState("");
 
   const [
@@ -47,161 +55,294 @@ export default function NewDelegation() {
   ] = useState("MEDIUM");
 
   const [
-    departmentId,
-    setDepartmentId,
-  ] = useState("");
-
-  const [
     assignedEaId,
     setAssignedEaId,
   ] = useState("");
 
-  const [loading, setLoading] =
-    useState(false);
+  const [
+    description,
+    setDescription,
+  ] = useState("");
 
-  const [message, setMessage] =
-    useState("");
+  const [
+    loading,
+    setLoading,
+  ] = useState(false);
 
-  const [error, setError] =
-    useState("");
+  const [
+    formLoading,
+    setFormLoading,
+  ] = useState(true);
+
+  const [
+    error,
+    setError,
+  ] = useState("");
+
+  const [
+    message,
+    setMessage,
+  ] = useState("");
 
   useEffect(() => {
     loadFormData();
   }, []);
 
+  /* ==========================================
+     LOAD DEPARTMENT + EA
+  ========================================== */
+
   async function loadFormData() {
+    setFormLoading(true);
+    setError("");
+
     try {
       const [
         departmentResponse,
         eaResponse,
       ] = await Promise.all([
-        api.get("/departments"),
-        api.get("/users/eas"),
+        api.get(
+          "/departments"
+        ),
+
+        api.get(
+          "/users?role=EA"
+        ),
       ]);
 
+      /*
+        SUPPORT CURRENT DEPARTMENT
+        RESPONSE FORMAT
+      */
+
+      const departmentData =
+        Array.isArray(
+          departmentResponse.data
+        )
+          ? departmentResponse.data
+          : departmentResponse.data
+              .data ||
+            departmentResponse.data
+              .departments ||
+            [];
+
+      /*
+        SUPPORT CURRENT USER
+        RESPONSE FORMAT
+      */
+
+      const userData =
+        Array.isArray(
+          eaResponse.data
+        )
+          ? eaResponse.data
+          : eaResponse.data.data ||
+            eaResponse.data.users ||
+            [];
+
+      const activeDepartments =
+        departmentData.filter(
+          (
+            department: Department
+          ) =>
+            department.isActive ===
+              undefined ||
+            department.isActive ===
+              true ||
+            department.isActive ===
+              1
+        );
+
+      const activeEas =
+        userData.filter(
+          (user: EAUser) =>
+            user.role === "EA" &&
+            (
+              user.isActive ===
+                undefined ||
+              user.isActive ===
+                true ||
+              user.isActive === 1
+            )
+        );
+
       setDepartments(
-        departmentResponse.data.data || []
+        activeDepartments
       );
 
-      setEas(
-        eaResponse.data.data || []
+      setEaUsers(
+        activeEas
       );
+
     } catch (error: any) {
+
+      console.error(
+        "FORM DATA ERROR:",
+        error
+      );
+
       if (
-        error.response?.status === 401
+        error.response?.status ===
+        401
       ) {
         navigate("/");
         return;
       }
 
+      setDepartments([]);
+      setEaUsers([]);
+
       setError(
-        "Unable to load form data"
+        error.response?.data
+          ?.message ||
+          "Unable to load form data"
       );
+
+    } finally {
+
+      setFormLoading(false);
+
     }
   }
 
-  async function createTask(
+  /* ==========================================
+     CREATE DELEGATION
+  ========================================== */
+
+  async function handleSubmit(
     e: React.FormEvent
   ) {
     e.preventDefault();
 
-    setLoading(true);
-    setMessage("");
     setError("");
+    setMessage("");
+
+    if (
+      !title.trim() ||
+      !departmentId ||
+      !priority ||
+      !assignedEaId ||
+      !description.trim()
+    ) {
+      setError(
+        "Please complete all required fields."
+      );
+
+      return;
+    }
+
+    setLoading(true);
 
     try {
-      const response =
-        await api.post(
-          "/tasks",
-          {
-            title,
-            description,
-            priority,
+      await api.post(
+        "/tasks",
+        {
+          title:
+            title.trim(),
 
-            departmentId:
-              Number(
-                departmentId
-              ),
+          description:
+            description.trim(),
 
-            assignedEaId:
-              Number(
-                assignedEaId
-              ),
-          }
-        );
+          priority,
+
+          departmentId:
+            Number(
+              departmentId
+            ),
+
+          assignedEaId:
+            Number(
+              assignedEaId
+            ),
+        }
+      );
 
       setMessage(
-        `Delegation #${response.data.taskId} created successfully.`
+        "Delegation created successfully."
       );
 
       setTitle("");
-      setDescription("");
-      setPriority("MEDIUM");
       setDepartmentId("");
+      setPriority("MEDIUM");
       setAssignedEaId("");
+      setDescription("");
 
     } catch (error: any) {
+
       setError(
-        error.response?.data?.message ||
+        error.response?.data
+          ?.message ||
           "Unable to create delegation"
       );
+
     } finally {
+
       setLoading(false);
+
     }
   }
 
   return (
     <div className="new-delegation-page">
 
-      <main className="new-delegation-content">
+      <div className="new-delegation-container">
 
-        <div className="new-delegation-title">
-
-          <h1>
-            Create New Delegation
-          </h1>
-
-        </div>
-
-        {message && (
-          <div className="new-success">
-            {message}
-          </div>
-        )}
+        <h1>
+          Create New Delegation
+        </h1>
 
         {error && (
-          <div className="new-error">
+          <div className="delegation-form-error">
             {error}
           </div>
         )}
 
+        {message && (
+          <div className="delegation-form-success">
+            {message}
+          </div>
+        )}
+
         <form
-          className="new-delegation-card"
-          onSubmit={createTask}
+          className="delegation-form-card"
+          onSubmit={
+            handleSubmit
+          }
         >
 
-          <div className="new-form-grid">
+          <div className="delegation-form-grid">
 
-            <div className="new-field">
+            {/* TASK TITLE */}
+
+            <div className="form-group">
 
               <label>
                 Task Title *
               </label>
 
               <input
-                value={title}
+                type="text"
+
+                value={
+                  title
+                }
+
                 onChange={(e) =>
                   setTitle(
                     e.target.value
                   )
                 }
+
                 placeholder="Enter task title"
+
                 required
               />
 
             </div>
 
-            <div className="new-field">
+            {/* DEPARTMENT */}
+
+            <div className="form-group">
 
               <label>
                 Department *
@@ -211,25 +352,36 @@ export default function NewDelegation() {
                 value={
                   departmentId
                 }
+
                 onChange={(e) =>
                   setDepartmentId(
                     e.target.value
                   )
                 }
+
+                disabled={
+                  formLoading
+                }
+
                 required
               >
 
                 <option value="">
-                  Select Department
+                  {formLoading
+                    ? "Loading..."
+                    : "Select Department"}
                 </option>
 
                 {departments.map(
-                  (department) => (
+                  (
+                    department
+                  ) => (
 
                     <option
                       key={
                         department.id
                       }
+
                       value={
                         department.id
                       }
@@ -246,19 +398,25 @@ export default function NewDelegation() {
 
             </div>
 
-            <div className="new-field">
+            {/* PRIORITY */}
+
+            <div className="form-group">
 
               <label>
                 Priority *
               </label>
 
               <select
-                value={priority}
+                value={
+                  priority
+                }
+
                 onChange={(e) =>
                   setPriority(
                     e.target.value
                   )
                 }
+
                 required
               >
 
@@ -278,34 +436,49 @@ export default function NewDelegation() {
 
             </div>
 
-            <div className="new-field">
+            {/* ASSIGN EA */}
+
+            <div className="form-group">
 
               <label>
-                Assign EA *
+                Assign to *
               </label>
 
               <select
                 value={
                   assignedEaId
                 }
+
                 onChange={(e) =>
                   setAssignedEaId(
                     e.target.value
                   )
                 }
+
+                disabled={
+                  formLoading
+                }
+
                 required
               >
 
                 <option value="">
-                  Select EA
+                  {formLoading
+                    ? "Loading..."
+                    : "Select EA"}
                 </option>
 
-                {eas.map(
+                {eaUsers.map(
                   (ea) => (
 
                     <option
-                      key={ea.id}
-                      value={ea.id}
+                      key={
+                        ea.id
+                      }
+
+                      value={
+                        ea.id
+                      }
                     >
                       {ea.name}
                     </option>
@@ -317,38 +490,48 @@ export default function NewDelegation() {
 
             </div>
 
-            <div className="new-field new-full">
+          </div>
 
-              <label>
-                Description *
-              </label>
+          {/* DESCRIPTION */}
 
-              <textarea
-                rows={6}
-                value={
-                  description
-                }
-                onChange={(e) =>
-                  setDescription(
-                    e.target.value
-                  )
-                }
-                placeholder="Enter task description"
-                required
-              />
+          <div className="form-group delegation-description">
 
-            </div>
+            <label>
+              Description *
+            </label>
+
+            <textarea
+              rows={5}
+
+              value={
+                description
+              }
+
+              onChange={(e) =>
+                setDescription(
+                  e.target.value
+                )
+              }
+
+              placeholder="Enter task description"
+
+              required
+            />
 
           </div>
 
-          <div className="new-form-actions">
+          {/* ACTIONS */}
+
+          <div className="delegation-form-actions">
 
             <button
               type="button"
-              className="new-cancel"
+
+              className="delegation-cancel-button"
+
               onClick={() =>
                 navigate(
-                  "/dashboard"
+                  "/tasks"
                 )
               }
             >
@@ -357,20 +540,27 @@ export default function NewDelegation() {
 
             <button
               type="submit"
-              className="new-submit"
-              disabled={loading}
+
+              className="delegation-submit-button"
+
+              disabled={
+                loading ||
+                formLoading
+              }
             >
+
               {loading
                 ? "Creating..."
                 : "Create Delegation"}
+
             </button>
 
           </div>
 
         </form>
 
-      </main>
+      </div>
 
     </div>
   );
-} 
+}

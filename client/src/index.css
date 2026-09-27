@@ -841,3 +841,70 @@ textarea {
     padding: 20px;
   }
 }
+
+/* ============================================
+   TASK MANAGEMENT COUNT CARD COLORS
+============================================ */
+
+.task-stat {
+  border: 1px solid #dce4df;
+  border-radius: 9px;
+  padding: 18px 20px;
+}
+
+/* TOTAL - WHITE */
+
+.task-stat:nth-child(1) {
+  background: #ffffff;
+  border-color: #dce4df;
+}
+
+.task-stat:nth-child(1) span,
+.task-stat:nth-child(1) strong {
+  color: #153f2d;
+}
+
+/* NEW - LIGHT BLUE */
+
+.task-stat:nth-child(2) {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.task-stat:nth-child(2) span {
+  color: #1d4ed8;
+}
+
+.task-stat:nth-child(2) strong {
+  color: #1e3a8a;
+}
+
+/* IN PROGRESS - LIGHT ORANGE */
+
+.task-stat:nth-child(3) {
+  background: #fff7ed;
+  border-color: #fed7aa;
+}
+
+.task-stat:nth-child(3) span {
+  color: #c2410c;
+}
+
+.task-stat:nth-child(3) strong {
+  color: #9a3412;
+}
+
+/* PENDING - LIGHT RED */
+
+.task-stat:nth-child(4) {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.task-stat:nth-child(4) span {
+  color: #dc2626;
+}
+
+.task-stat:nth-child(4) strong {
+  color: #991b1b;
+}

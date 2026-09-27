@@ -1,192 +1,264 @@
 .new-delegation-page {
-  min-height: 100vh;
-  background: #f4f7f5;
+  width: 100%;
+  padding: 16px 22px 60px;
+  box-sizing: border-box;
 }
 
-.new-delegation-content {
-  max-width: 1050px;
-
-  margin: auto;
-
-  padding: 38px 20px;
+.new-delegation-container {
+  width: 100%;
+  max-width: 940px;
+  margin: 0 auto;
 }
 
-.new-delegation-title {
-  margin-bottom: 22px;
+.new-delegation-container h1 {
+  margin: 0 0 20px;
+
+  color: #123f2c;
+
+  font-size: 22px;
+  font-weight: 700;
 }
 
-.new-delegation-title span {
-  color: #15803d;
+/* ============================================
+   FORM CARD
+============================================ */
 
-  font-size: 11px;
+.delegation-form-card {
+  width: 100%;
 
-  font-weight: 800;
+  background: #ffffff;
 
-  text-transform: uppercase;
+  border: 1px solid #dce4df;
 
-  letter-spacing: 0.08em;
+  border-radius: 9px;
+
+  padding: 26px;
+
+  box-sizing: border-box;
+
+  box-shadow:
+    0 2px 7px
+    rgba(20, 63, 45, 0.04);
 }
 
-.new-delegation-title h1 {
-  color: #143f2d;
+/* ============================================
+   TWO COLUMN FORM
+============================================ */
 
-  margin: 4px 0 6px;
-
-  font-size: 28px;
-}
-
-.new-delegation-title p {
-  color: #64748b;
-
-  font-size: 13px;
-}
-
-.new-delegation-card {
-  background: white;
-
-  border:
-    1px solid #dfe7e1;
-
-  border-radius: 10px;
-
-  padding: 28px;
-}
-
-.new-form-grid {
+.delegation-form-grid {
   display: grid;
 
   grid-template-columns:
-    1fr 1fr;
+    repeat(2, minmax(0, 1fr));
 
-  gap: 20px;
+  gap: 18px;
 }
 
-.new-field label {
-  display: block;
+.new-delegation-page .form-group {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+.new-delegation-page .form-group label {
+  color: #23372e;
 
   font-size: 12px;
 
   font-weight: 700;
-
-  margin-bottom: 7px;
-
-  color: #374151;
 }
 
-.new-field input,
-.new-field select,
-.new-field textarea {
+.new-delegation-page .form-group input,
+.new-delegation-page .form-group select,
+.new-delegation-page .form-group textarea {
   width: 100%;
 
-  border:
-    1px solid #cbd5d1;
+  box-sizing: border-box;
+
+  border: 1px solid #cad5ce;
 
   border-radius: 6px;
 
-  padding: 12px;
+  background: #ffffff;
+
+  color: #111827;
+
+  font-size: 14px;
 
   outline: none;
-
-  background: white;
 }
 
-.new-field input:focus,
-.new-field select:focus,
-.new-field textarea:focus {
-  border-color: #15803d;
+.new-delegation-page .form-group input,
+.new-delegation-page .form-group select {
+  height: 43px;
+
+  padding: 0 11px;
+}
+
+.new-delegation-page .form-group textarea {
+  padding: 11px;
+
+  resize: vertical;
+
+  min-height: 125px;
+
+  font-family: inherit;
+}
+
+.new-delegation-page .form-group input:focus,
+.new-delegation-page .form-group select:focus,
+.new-delegation-page .form-group textarea:focus {
+  border-color: #168a46;
 
   box-shadow:
     0 0 0 2px
-    rgba(21, 128, 61, 0.08);
+    rgba(22, 138, 70, 0.08);
 }
 
-.new-full {
-  grid-column: 1 / -1;
+/* ============================================
+   DESCRIPTION
+============================================ */
+
+.delegation-description {
+  margin-top: 18px;
 }
 
-.new-form-actions {
+/* ============================================
+   BUTTONS
+============================================ */
+
+.delegation-form-actions {
   display: flex;
 
   justify-content: flex-end;
+
+  align-items: center;
 
   gap: 10px;
 
   margin-top: 24px;
 }
 
-.new-cancel,
-.new-submit {
-  padding: 11px 17px;
+.delegation-cancel-button {
+  height: 40px;
+
+  padding: 0 20px;
+
+  background: #ffffff;
+
+  color: #374151;
+
+  border: 1px solid #cbd5ce;
 
   border-radius: 6px;
 
   cursor: pointer;
 
+  font-size: 13px;
+
   font-weight: 600;
 }
 
-.new-cancel {
-  background: white;
-
-  border:
-    1px solid #cbd5d1;
-
-  color: #475569;
+.delegation-cancel-button:hover {
+  background: #f8faf9;
 }
 
-.new-submit {
-  background: #15803d;
+.delegation-submit-button {
+  height: 40px;
 
-  color: white;
+  padding: 0 20px;
 
-  border: none;
-}
+  background: #168a46;
 
-.new-submit:disabled {
-  opacity: 0.6;
-}
+  color: #ffffff;
 
-.new-success {
-  background: #ecfdf5;
-
-  border:
-    1px solid #bbf7d0;
-
-  color: #166534;
-
-  padding: 12px;
+  border: 1px solid #168a46;
 
   border-radius: 6px;
 
-  margin-bottom: 16px;
+  cursor: pointer;
+
+  font-size: 13px;
+
+  font-weight: 700;
 }
 
-.new-error {
-  background: #fef2f2;
+.delegation-submit-button:hover {
+  background: #11783b;
+}
 
-  border:
-    1px solid #fecaca;
+.delegation-submit-button:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
+}
+
+/* ============================================
+   MESSAGES
+============================================ */
+
+.delegation-form-error {
+  margin-bottom: 15px;
+
+  padding: 11px 13px;
+
+  background: #fef2f2;
 
   color: #b91c1c;
 
-  padding: 12px;
+  border: 1px solid #fecaca;
 
   border-radius: 6px;
 
-  margin-bottom: 16px;
+  font-size: 13px;
 }
 
+.delegation-form-success {
+  margin-bottom: 15px;
+
+  padding: 11px 13px;
+
+  background: #ecfdf3;
+
+  color: #166534;
+
+  border: 1px solid #bbf7d0;
+
+  border-radius: 6px;
+
+  font-size: 13px;
+}
+
+/* ============================================
+   MOBILE
+============================================ */
+
 @media (max-width: 700px) {
-  .new-form-grid {
+
+  .new-delegation-page {
+    padding:
+      12px
+      12px
+      40px;
+  }
+
+  .delegation-form-card {
+    padding: 18px;
+  }
+
+  .delegation-form-grid {
     grid-template-columns:
       1fr;
   }
 
-  .new-full {
-    grid-column: auto;
+  .delegation-form-actions {
+    flex-direction: column-reverse;
   }
 
-  .new-delegation-brand strong {
-    display: none;
+  .delegation-form-actions button {
+    width: 100%;
   }
+
 }

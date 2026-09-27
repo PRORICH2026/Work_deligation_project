@@ -16,33 +16,26 @@ interface Task {
   id: number;
 
   title: string;
-
   description?: string;
 
   priority: string;
-
   status: string;
-
   responsibility: string;
 
   departmentName: string;
 
   createdByName: string;
-
   createdByEmail?: string;
 
   assignedEaName?: string;
-
   assignedEaEmail?: string;
 
   assignedEmployeeName?: string;
-
   assignedEmployeeEmail?: string;
 
   startDate?: string;
 
   originalTargetDate?: string;
-
   currentTargetDate?: string;
 
   eaFirstActionAt?: string;
@@ -151,8 +144,13 @@ export default function TaskDetails() {
     loadTaskDetails();
   }, [id]);
 
+  /* ==========================================
+     LOAD DETAILS
+  ========================================== */
+
   async function loadTaskDetails() {
     setLoading(true);
+
     setError("");
 
     try {
@@ -188,7 +186,7 @@ export default function TaskDetails() {
       setError(
         error.response?.data
           ?.message ||
-          "Unable to load task details"
+          "Unable to load delegation details"
       );
 
     } finally {
@@ -200,7 +198,8 @@ export default function TaskDetails() {
 
   /* ==========================================
      DATE ONLY
-     FOR BUSINESS / PLANNING DATES
+
+     START / TARGET / REVISED TARGET
   ========================================== */
 
   function formatDateOnly(
@@ -226,7 +225,8 @@ export default function TaskDetails() {
 
   /* ==========================================
      DATE + TIME
-     FOR SYSTEM LOGS
+
+     SYSTEM / AUDIT LOGS
   ========================================== */
 
   function formatDateTime(
@@ -250,11 +250,27 @@ export default function TaskDetails() {
     return date.toLocaleString();
   }
 
+  /* ==========================================
+     STATUS TEXT
+  ========================================== */
+
   function formatStatus(
     value?: string
   ) {
     if (!value) {
       return "-";
+    }
+
+    if (
+      value === "ON_HOLD"
+    ) {
+      return "PENDING";
+    }
+
+    if (
+      value === "COMPLETED"
+    ) {
+      return "COMPLETE";
     }
 
     return value.replaceAll(
@@ -265,6 +281,8 @@ export default function TaskDetails() {
 
   /* ==========================================
      REVISED TARGET
+
+     SHOW ONLY IF TARGET WAS CHANGED
   ========================================== */
 
   function getRevisedTarget() {
@@ -286,6 +304,17 @@ export default function TaskDetails() {
       );
 
     if (
+      Number.isNaN(
+        original.getTime()
+      ) ||
+      Number.isNaN(
+        current.getTime()
+      )
+    ) {
+      return "-";
+    }
+
+    if (
       original.getTime() ===
       current.getTime()
     ) {
@@ -297,6 +326,10 @@ export default function TaskDetails() {
     );
   }
 
+  /* ==========================================
+     LOADING
+  ========================================== */
+
   if (loading) {
     return (
       <div className="details-loading">
@@ -305,6 +338,10 @@ export default function TaskDetails() {
     );
   }
 
+  /* ==========================================
+     ERROR
+  ========================================== */
+
   if (
     error ||
     !task
@@ -312,20 +349,23 @@ export default function TaskDetails() {
     return (
       <div className="details-page">
 
-        <button
-          className="details-back"
-          onClick={() =>
-            navigate(
-              "/tasks"
-            )
-          }
-        >
-          ← Back
-        </button>
-
         <div className="details-error">
           {error ||
             "Delegation not found"}
+        </div>
+
+        <div className="details-bottom-actions">
+
+          <button
+            type="button"
+            className="details-bottom-back-button"
+            onClick={() =>
+              navigate(-1)
+            }
+          >
+            ← Back
+          </button>
+
         </div>
 
       </div>
@@ -336,20 +376,10 @@ export default function TaskDetails() {
     <div className="details-page">
 
       {/* ======================================
-          TOP DETAILS
+          TITLE
       ====================================== */}
 
       <div className="details-header">
-
-        <button
-          className="details-back"
-
-          onClick={() =>
-            navigate(-1)
-          }
-        >
-          ← Back
-        </button>
 
         <div className="details-title-row">
 
@@ -378,7 +408,7 @@ export default function TaskDetails() {
       </div>
 
       {/* ======================================
-          SUMMARY
+          DELEGATION SUMMARY
       ====================================== */}
 
       <section className="details-card">
@@ -391,7 +421,6 @@ export default function TaskDetails() {
 
           <Info
             label="Department"
-
             value={
               task.departmentName
             }
@@ -399,7 +428,6 @@ export default function TaskDetails() {
 
           <Info
             label="Priority"
-
             value={
               task.priority
             }
@@ -407,7 +435,6 @@ export default function TaskDetails() {
 
           <Info
             label="Responsibility"
-
             value={
               task.responsibility
             }
@@ -415,7 +442,6 @@ export default function TaskDetails() {
 
           <Info
             label="Created By"
-
             value={
               task.createdByName
             }
@@ -423,7 +449,6 @@ export default function TaskDetails() {
 
           <Info
             label="Assigned EA"
-
             value={
               task.assignedEaName ||
               "-"
@@ -432,7 +457,6 @@ export default function TaskDetails() {
 
           <Info
             label="Employee"
-
             value={
               task.assignedEmployeeName ||
               "-"
@@ -468,11 +492,8 @@ export default function TaskDetails() {
 
         <div className="details-grid">
 
-          {/* LOG - DATE + TIME */}
-
           <Info
             label="Created Log"
-
             value={
               formatDateTime(
                 task.createdAt
@@ -480,11 +501,8 @@ export default function TaskDetails() {
             }
           />
 
-          {/* DATE ONLY */}
-
           <Info
             label="Start Date"
-
             value={
               formatDateOnly(
                 task.startDate
@@ -492,11 +510,8 @@ export default function TaskDetails() {
             }
           />
 
-          {/* ORIGINAL TARGET RENAMED */}
-
           <Info
             label="Target Date"
-
             value={
               formatDateOnly(
                 task.originalTargetDate
@@ -504,21 +519,15 @@ export default function TaskDetails() {
             }
           />
 
-          {/* ONLY SHOWS IF TARGET WAS REVISED */}
-
           <Info
             label="Revised Target Date"
-
             value={
               getRevisedTarget()
             }
           />
 
-          {/* LOG - DATE + TIME */}
-
           <Info
             label="Completed Log"
-
             value={
               formatDateTime(
                 task.completedAt
@@ -526,11 +535,8 @@ export default function TaskDetails() {
             }
           />
 
-          {/* LOG - DATE + TIME */}
-
           <Info
             label="Last Updated Log"
-
             value={
               formatDateTime(
                 task.updatedAt
@@ -543,7 +549,7 @@ export default function TaskDetails() {
       </section>
 
       {/* ======================================
-          PERFORMANCE
+          RESPONSIBILITY & PERFORMANCE
       ====================================== */}
 
       <section className="details-card">
@@ -555,8 +561,7 @@ export default function TaskDetails() {
         <div className="details-grid">
 
           <Info
-            label="EA First Action"
-
+            label="EA First Action Log"
             value={
               formatDateTime(
                 task.eaFirstActionAt
@@ -566,7 +571,6 @@ export default function TaskDetails() {
 
           <Info
             label="EA Response"
-
             value={
               task.eaFirstActionAt
                 ? task.eaLateResponse
@@ -578,7 +582,6 @@ export default function TaskDetails() {
 
           <Info
             label="Delay Count"
-
             value={
               String(
                 task.delayCount ||
@@ -589,7 +592,6 @@ export default function TaskDetails() {
 
           <Info
             label="Target Revisions"
-
             value={`${task.targetDateUpdateCount || 0} / 3`}
           />
 
@@ -623,7 +625,6 @@ export default function TaskDetails() {
 
                 <div
                   className="delay-item"
-
                   key={
                     delay.id
                   }
@@ -743,7 +744,6 @@ export default function TaskDetails() {
 
                 <div
                   className="timeline-item"
-
                   key={
                     history.id
                   }
@@ -816,9 +816,34 @@ export default function TaskDetails() {
 
       </section>
 
+      {/* ======================================
+          ONE BACK BUTTON ONLY
+      ====================================== */}
+
+      <div className="details-bottom-actions">
+
+        <button
+          type="button"
+          className="details-bottom-back-button"
+          onClick={() =>
+            navigate(-1)
+          }
+        >
+          ← Back
+        </button>
+
+      </div>
+
     </div>
   );
 }
+
+/* ============================================
+   INFO CARD
+
+   IMPORTANT:
+   NO BACK BUTTON INSIDE THIS COMPONENT
+============================================ */
 
 function Info({
   label,

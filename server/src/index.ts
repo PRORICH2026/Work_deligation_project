@@ -11,6 +11,8 @@ import userRouter from "./routes/users.js";
 import employeeRouter from "./routes/employees.js";
 import dashboardRouter from "./routes/dashboard.js";
 
+import departmentsRouter from "./routes/departments.js";
+
 import {
   requireAuth,
 } from "./middleware/auth.js";
@@ -68,45 +70,9 @@ app.use(
   dashboardRouter
 );
 
-/* ==========================================
-   DEPARTMENTS
-========================================== */
-
-app.get(
+app.use(
   "/api/departments",
-  requireAuth,
-  async (req, res) => {
-    try {
-      const [rows] =
-        await db.query(`
-          SELECT
-            id,
-            name
-          FROM Department
-          WHERE isActive = true
-          ORDER BY name
-        `);
-
-      return res.json({
-        success: true,
-        data: rows,
-      });
-    } catch (error) {
-      console.error(
-        "GET DEPARTMENTS ERROR:",
-        error
-      );
-
-      return res
-        .status(500)
-        .json({
-          success: false,
-
-          message:
-            "Unable to load departments",
-        });
-    }
-  }
+  departmentsRouter
 );
 
 /* ==========================================

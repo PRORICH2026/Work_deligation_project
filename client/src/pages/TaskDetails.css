@@ -1,141 +1,237 @@
+/* ============================================
+   PAGE
+============================================ */
+
 .details-page {
-  max-width: 1250px;
-  margin: auto;
-  padding: 30px 20px 60px;
+  width: 100%;
+
+  max-width: 1280px;
+
+  margin: 0 auto;
+
+  padding:
+    16px
+    22px
+    50px;
+
+  box-sizing: border-box;
 }
 
-.details-loading {
-  min-height: 100vh;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  color: #6b7280;
-}
+/* ============================================
+   HEADER / TITLE
+============================================ */
 
 .details-header {
-  margin-bottom: 22px;
-}
+  width: 100%;
 
-.details-back {
-  background: transparent;
-  border: none;
-
-  color: #1e3a2f;
-
-  cursor: pointer;
-
-  font-weight: 600;
-
-  padding: 0;
-
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 .details-title-row {
+  width: 100%;
+
   display: flex;
 
   justify-content: space-between;
+
   align-items: center;
 
   gap: 20px;
 }
 
-.details-title-row h1 {
-  color: #1e3a2f;
-
-  margin-top: 3px;
-
-  font-size: 30px;
-}
-
 .details-id {
-  color: #6b7280;
+  margin-bottom: 5px;
 
-  font-size: 12px;
+  color: #64748b;
+
+  font-size: 11px;
+
+  font-weight: 600;
 
   text-transform: uppercase;
+}
+
+.details-title-row h1 {
+  margin: 0;
+
+  color: #153f2d;
+
+  font-size: 28px;
 
   font-weight: 700;
 }
 
-.details-status {
-  display: inline-block;
 
-  padding: 8px 13px;
+/* ============================================
+   MAIN STATUS BADGE
+============================================ */
+
+.details-status {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding:
+    7px
+    14px;
 
   border-radius: 6px;
 
-  font-size: 11px;
+  font-size: 10px;
 
   font-weight: 700;
 
   white-space: nowrap;
 }
 
+
+/* ============================================
+   STATUS COLORS
+============================================ */
+
+.status-new {
+  background: #dbeafe;
+
+  color: #1d4ed8;
+}
+
+.status-in_progress {
+  background: #ffedd5;
+
+  color: #c2410c;
+}
+
+.status-on_hold {
+  background: #fee2e2;
+
+  color: #991b1b;
+}
+
+.status-delayed {
+  background: #fee2e2;
+
+  color: #991b1b;
+}
+
+.status-completed {
+  background: #dcfce7;
+
+  color: #166534;
+}
+
+.status-cancelled {
+  background: #f3f4f6;
+
+  color: #6b7280;
+}
+
+
+/* ============================================
+   MAIN CARDS
+============================================ */
+
 .details-card {
-  background: white;
+  width: 100%;
+
+  background: #ffffff;
 
   border:
-    1px solid #e5e7eb;
+    1px solid #dce4df;
 
   border-radius: 9px;
 
-  padding: 24px;
+  padding: 22px;
 
   margin-bottom: 20px;
+
+  box-sizing: border-box;
+
+  box-shadow:
+    0 2px 7px
+    rgba(20, 63, 45, 0.03);
 }
 
 .section-title {
-  color: #1e3a2f;
+  margin-bottom: 18px;
 
-  font-size: 17px;
+  color: #153f2d;
+
+  font-size: 16px;
 
   font-weight: 700;
-
-  margin-bottom: 20px;
 }
+
+
+/* ============================================
+   INFORMATION GRID
+============================================ */
 
 .details-grid {
   display: grid;
 
   grid-template-columns:
-    repeat(3, 1fr);
+    repeat(3, minmax(0, 1fr));
 
   gap: 14px;
 }
 
+
+/* ============================================
+   INFORMATION BOX
+============================================ */
+
 .info-box {
-  background: #f9fafb;
+  min-height: 64px;
+
+  padding:
+    14px
+    14px;
+
+  background: #f8faf9;
 
   border:
-    1px solid #f1f5f9;
-
-  padding: 14px;
+    1px solid #edf1ee;
 
   border-radius: 7px;
+
+  box-sizing: border-box;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  gap: 5px;
 }
 
 .info-box span {
-  display: block;
+  color: #64748b;
 
-  color: #6b7280;
+  font-size: 9px;
 
-  font-size: 10px;
+  font-weight: 500;
 
   text-transform: uppercase;
-
-  margin-bottom: 5px;
 }
 
 .info-box strong {
-  font-size: 13px;
+  color: #111827;
 
-  color: #1f2937;
+  font-size: 12px;
+
+  font-weight: 700;
 
   word-break: break-word;
 }
+
+
+/* ============================================
+   DESCRIPTION
+============================================ */
 
 .description-box {
   margin-top: 16px;
@@ -143,36 +239,39 @@
   padding-top: 16px;
 
   border-top:
-    1px solid #f1f5f9;
+    1px solid #edf1ee;
 }
 
 .description-box span {
   display: block;
 
-  color: #6b7280;
+  margin-bottom: 7px;
 
-  font-size: 10px;
+  color: #64748b;
+
+  font-size: 9px;
+
+  font-weight: 500;
 
   text-transform: uppercase;
-
-  margin-bottom: 7px;
 }
 
 .description-box p {
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 12px;
+
   line-height: 1.6;
 
-  font-size: 14px;
+  white-space: pre-wrap;
 }
 
-.history-empty {
-  color: #9ca3af;
 
-  font-size: 13px;
-
-  padding: 15px 0;
-}
-
-/* DELAYS */
+/* ============================================
+   TARGET REVISION LIST
+============================================ */
 
 .delay-list {
   display: flex;
@@ -183,32 +282,24 @@
 }
 
 .delay-item {
+  padding: 16px;
+
+  background: #fffaf5;
+
   border:
     1px solid #fed7aa;
 
-  background: #fffaf4;
-
-  border-radius: 8px;
-
-  padding: 17px;
+  border-radius: 7px;
 }
 
 .delay-number {
-  display: inline-block;
-
-  background: #ffedd5;
+  margin-bottom: 13px;
 
   color: #9a3412;
 
-  font-size: 11px;
+  font-size: 12px;
 
   font-weight: 700;
-
-  padding: 5px 9px;
-
-  border-radius: 5px;
-
-  margin-bottom: 14px;
 }
 
 .delay-dates {
@@ -216,78 +307,114 @@
 
   align-items: center;
 
-  gap: 20px;
+  gap: 18px;
 
   margin-bottom: 15px;
 }
 
-.delay-dates div:not(
-    .delay-arrow
-  ) {
+.delay-dates > div:not(
+  .delay-arrow
+) {
   flex: 1;
 }
 
 .delay-dates span {
   display: block;
 
-  color: #6b7280;
+  margin-bottom: 5px;
 
-  font-size: 10px;
+  color: #64748b;
+
+  font-size: 9px;
 
   text-transform: uppercase;
-
-  margin-bottom: 4px;
 }
 
 .delay-dates strong {
-  font-size: 13px;
+  color: #111827;
+
+  font-size: 12px;
 }
 
 .delay-arrow {
-  color: #9ca3af;
+  color: #c2410c;
 
   font-size: 18px;
+
+  font-weight: 700;
 }
 
 .delay-reason {
-  border-top:
-    1px solid #fed7aa;
-
-  padding-top: 12px;
+  margin-bottom: 12px;
 }
 
 .delay-reason span {
   display: block;
 
-  color: #6b7280;
+  margin-bottom: 5px;
 
-  font-size: 10px;
+  color: #64748b;
+
+  font-size: 9px;
 
   text-transform: uppercase;
-
-  margin-bottom: 5px;
 }
 
 .delay-reason p {
-  font-size: 13px;
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 12px;
 
   line-height: 1.5;
 }
 
 .delay-footer {
-  margin-top: 12px;
+  padding-top: 10px;
 
-  color: #6b7280;
+  border-top:
+    1px solid #fde7cc;
 
-  font-size: 11px;
+  color: #64748b;
+
+  font-size: 10px;
 }
 
-/* TIMELINE */
+.delay-footer strong {
+  color: #374151;
+}
+
+
+/* ============================================
+   EMPTY HISTORY
+============================================ */
+
+.history-empty {
+  padding:
+    25px
+    15px;
+
+  text-align: center;
+
+  color: #94a3b8;
+
+  font-size: 12px;
+
+  background: #fafcfb;
+
+  border-radius: 6px;
+}
+
+
+/* ============================================
+   STATUS HISTORY TIMELINE
+============================================ */
 
 .timeline {
-  position: relative;
+  display: flex;
 
-  margin-left: 7px;
+  flex-direction: column;
 }
 
 .timeline-item {
@@ -295,97 +422,200 @@
 
   display: flex;
 
-  gap: 16px;
+  gap: 14px;
 
-  padding-bottom: 22px;
+  padding-bottom: 20px;
 }
 
-.timeline-item:not(
-    :last-child
-  )::before {
+.timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.timeline-item:not(:last-child)::before {
   content: "";
 
   position: absolute;
 
-  left: 5px;
-  top: 12px;
+  top: 14px;
+
   bottom: 0;
 
-  width: 2px;
+  left: 5px;
 
-  background: #e5e7eb;
+  width: 1px;
+
+  background: #cbd5ce;
 }
 
 .timeline-dot {
-  width: 12px;
-  height: 12px;
+  width: 11px;
 
-  border-radius: 50%;
-
-  background: #1e3a2f;
+  height: 11px;
 
   margin-top: 4px;
 
+  flex: 0 0 11px;
+
+  border-radius: 50%;
+
+  background: #168a46;
+
   position: relative;
 
-  z-index: 2;
-
-  flex-shrink: 0;
+  z-index: 1;
 }
 
 .timeline-content {
   flex: 1;
 
-  padding-bottom: 4px;
+  min-width: 0;
+
+  padding-bottom: 2px;
 }
 
 .timeline-top {
   display: flex;
 
-  justify-content:
-    space-between;
+  justify-content: space-between;
+
+  align-items: flex-start;
 
   gap: 15px;
+
+  margin-bottom: 5px;
 }
 
 .timeline-top strong {
-  font-size: 13px;
+  color: #153f2d;
 
-  color: #1f2937;
+  font-size: 12px;
 }
 
 .timeline-top span {
-  color: #9ca3af;
+  color: #64748b;
 
-  font-size: 11px;
+  font-size: 10px;
 
   white-space: nowrap;
 }
 
 .timeline-user {
-  color: #6b7280;
+  margin-bottom: 7px;
 
-  font-size: 11px;
+  color: #64748b;
 
-  margin-top: 5px;
+  font-size: 10px;
 }
 
 .timeline-note {
-  background: #f9fafb;
+  padding:
+    9px
+    11px;
 
-  border:
-    1px solid #f1f5f9;
-
-  padding: 9px 11px;
+  background: #f8faf9;
 
   border-radius: 5px;
 
-  margin-top: 8px;
+  color: #374151;
 
-  font-size: 12px;
+  font-size: 11px;
+
+  line-height: 1.5;
 }
 
+
+/* ============================================
+   SINGLE BOTTOM BACK BUTTON
+============================================ */
+
+.details-bottom-actions {
+  width: 100%;
+
+  display: flex;
+
+  justify-content: flex-end;
+
+  align-items: center;
+
+  padding:
+    5px
+    0
+    30px;
+
+  box-sizing: border-box;
+}
+
+.details-bottom-back-button {
+  min-width: 110px;
+
+  padding:
+    11px
+    22px;
+
+  background: #ffffff;
+
+  color: #166534;
+
+  border:
+    1px solid #168a46;
+
+  border-radius: 6px;
+
+  cursor: pointer;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  box-shadow:
+    0 2px 6px
+    rgba(15, 90, 54, 0.08);
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.details-bottom-back-button:hover {
+  background: #0f5a36;
+
+  color: #ffffff;
+
+  border-color: #0f5a36;
+}
+
+
+/* ============================================
+   LOADING
+============================================ */
+
+.details-loading {
+  min-height: 300px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  color: #166534;
+
+  font-size: 13px;
+
+  font-weight: 600;
+}
+
+
+/* ============================================
+   ERROR
+============================================ */
+
 .details-error {
+  padding: 14px;
+
+  margin-bottom: 20px;
+
   background: #fef2f2;
 
   color: #b91c1c;
@@ -393,71 +623,64 @@
   border:
     1px solid #fecaca;
 
-  padding: 15px;
+  border-radius: 6px;
 
-  border-radius: 7px;
+  font-size: 12px;
 }
 
-/* USE EXISTING STATUS COLORS */
 
-.status-new {
-  background: #e0f2fe;
-  color: #0369a1;
-}
+/* ============================================
+   TABLET
+============================================ */
 
-.status-in_progress {
-  background: #fef3c7;
-  color: #92400e;
-}
+@media (max-width: 900px) {
 
-.status-on_hold {
-  background: #f3f4f6;
-  color: #4b5563;
-}
-
-.status-delayed {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.status-completed {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.status-cancelled {
-  background: #f3f4f6;
-  color: #6b7280;
-}
-
-@media (
-  max-width: 800px
-) {
   .details-grid {
     grid-template-columns:
-      1fr 1fr;
+      repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+
+/* ============================================
+   MOBILE
+============================================ */
+
+@media (max-width: 650px) {
+
+  .details-page {
+    padding:
+      12px
+      12px
+      35px;
   }
 
   .details-title-row {
     align-items: flex-start;
   }
-}
 
-@media (
-  max-width: 600px
-) {
-  .details-page {
+  .details-title-row h1 {
+    font-size: 22px;
+  }
+
+  .details-status {
     padding:
-      20px 12px 40px;
+      6px
+      9px;
+
+    font-size: 9px;
+  }
+
+  .details-card {
+    padding: 16px;
+
+    margin-bottom: 14px;
   }
 
   .details-grid {
     grid-template-columns:
       1fr;
-  }
-
-  .details-title-row {
-    flex-direction: column;
   }
 
   .delay-dates {
@@ -469,7 +692,8 @@
   }
 
   .delay-arrow {
-    transform: rotate(90deg);
+    transform:
+      rotate(90deg);
   }
 
   .timeline-top {
@@ -481,4 +705,22 @@
   .timeline-top span {
     white-space: normal;
   }
+
+  .details-bottom-actions {
+    padding:
+      5px
+      0
+      20px;
+  }
+
+  .details-bottom-back-button {
+    min-width: 100px;
+
+    padding:
+      10px
+      18px;
+
+    font-size: 11px;
+  }
+
 }
