@@ -38,6 +38,17 @@ enum Responsibility {
   EMPLOYEE
 }
 
+enum NotificationType {
+  DELEGATION_CREATED
+  DELEGATION_ASSIGNED
+  STATUS_CHANGED
+  TARGET_REVISED
+  COMPLETED
+  DUE_TODAY
+  OVERDUE
+  SYSTEM
+}
+
 model Department {
   id        Int      @id @default(autoincrement())
   name      String   @unique
@@ -68,6 +79,8 @@ model User {
 
   statusChanges TaskStatusHistory[]
   createdDelays TaskDelay[]
+
+  notifications Notification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -128,6 +141,7 @@ model Task {
 
   statusHistory TaskStatusHistory[]
   delays        TaskDelay[]
+  notifications Notification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -166,4 +180,28 @@ model TaskDelay {
   createdBy   User @relation(fields: [createdById], references: [id])
 
   createdAt DateTime @default(now())
+}
+
+model Notification {
+  id Int @id @default(autoincrement())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  taskId Int?
+  task   Task? @relation(fields: [taskId], references: [id], onDelete: SetNull)
+
+  type NotificationType
+
+  title   String
+  message String @db.Text
+
+  isRead Boolean @default(false)
+  readAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, isRead, createdAt])
+  @@index([taskId])
 }

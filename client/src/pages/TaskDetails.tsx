@@ -173,6 +173,38 @@ export default function TaskDetails() {
           .delays || []
       );
 
+      /*
+        Opening a delegation automatically
+        clears this user's unread notifications
+        for this delegation.
+      */
+
+      try {
+        if (id) {
+          await api.patch(
+            `/notifications/task/${id}/read`
+          );
+
+          window.dispatchEvent(
+            new Event(
+              "notifications-updated"
+            )
+          );
+        }
+      } catch (
+        notificationError
+      ) {
+        /*
+          Notification failure must never
+          stop the delegation details page.
+        */
+
+        console.error(
+          "Unable to clear delegation notifications",
+          notificationError
+        );
+      }
+
     } catch (error: any) {
 
       if (

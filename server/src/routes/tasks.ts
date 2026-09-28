@@ -3,6 +3,11 @@ import { Router } from "express";
 import { db } from "../lib/db.js";
 
 import {
+  createNotification,
+  type NotificationType,
+} from "../services/notificationService.js";
+
+import {
   requireAuth,
   type AuthRequest,
 } from "../middleware/auth.js";
@@ -36,6 +41,145 @@ function isManagementRole(
   return managementRoles.includes(
     role
   );
+}
+
+/* ============================================
+   NOTIFICATION HELPERS
+
+   Notification errors must never cancel a
+   delegation action that already succeeded.
+============================================ */
+
+async function safeCreateNotification(
+  input: {
+    userId: number;
+    taskId?: number | null;
+    type: NotificationType;
+    title: string;
+    message: string;
+  }
+) {
+  try {
+    await createNotification(
+      input
+    );
+  } catch (error) {
+    console.error(
+      "NOTIFICATION CREATE ERROR:",
+      error
+    );
+  }
+}
+
+async function safeNotifyUsers(
+  userIds: Array<
+    number | null | undefined
+  >,
+  notification: {
+    taskId: number;
+    type: NotificationType;
+    title: string;
+    message: string;
+  }
+) {
+  const uniqueUserIds =
+    Array.from(
+      new Set(
+        userIds
+          .map((id) =>
+            Number(id)
+          )
+          .filter((id) =>
+            Number.isInteger(id) &&
+            id > 0
+          )
+      )
+    );
+
+  await Promise.all(
+    uniqueUserIds.map(
+      (userId) =>
+        safeCreateNotification({
+          userId,
+          taskId:
+            notification.taskId,
+          type:
+            notification.type,
+          title:
+            notification.title,
+          message:
+            notification.message,
+        })
+    )
+  );
+}
+
+
+/* ============================================
+   DELEGATION NOTIFICATION AUDIENCE
+
+   RULE:
+   - ADMIN / MD / HR / EA receive every
+     delegation notification.
+   - EMPLOYEE receives notifications only for
+     delegations they personally created.
+   - Being assigned to another person's
+     delegation does not give an employee
+     that delegation's notifications.
+============================================ */
+
+async function safeNotifyDelegationAudience(
+  createdById: number,
+  notification: {
+    taskId: number;
+    type: NotificationType;
+    title: string;
+    message: string;
+  }
+) {
+  try {
+    const [managementRows] =
+      await db.query(
+        `
+        SELECT id
+
+        FROM \`User\`
+
+        WHERE
+          isActive = 1
+
+          AND role IN
+          (
+            'ADMIN',
+            'MD',
+            'HR',
+            'EA'
+          )
+        `
+      );
+
+    const managementUserIds =
+      (managementRows as any[])
+        .map(
+          (row) =>
+            Number(row.id)
+        );
+
+    await safeNotifyUsers(
+      [
+        Number(createdById),
+        ...managementUserIds,
+      ],
+      notification
+    );
+
+  } catch (error) {
+
+    console.error(
+      "DELEGATION NOTIFICATION AUDIENCE ERROR:",
+      error
+    );
+  }
 }
 
 /* ============================================
@@ -819,6 +963,32 @@ router.post(
         ]
       );
 
+      /* NOTIFY:
+         - ALL MANAGEMENT
+         - EMPLOYEE CREATOR ONLY
+      */
+
+      const selectedEa =
+        (eaRows as any[])[0];
+
+      await safeNotifyDelegationAudience(
+        Number(
+          user.userId
+        ),
+        {
+          taskId,
+
+          type:
+            "DELEGATION_CREATED",
+
+          title:
+            `Delegation #${taskId} Created`,
+
+          message:
+            `A new delegation "${title.trim()}" has been created and assigned to ${selectedEa.name}.`,
+        }
+      );
+
       return res
         .status(201)
         .json({
@@ -985,6 +1155,8 @@ router.patch(
           SELECT
 
             id,
+            title,
+            createdById,
             status,
             responsibility,
 
@@ -1253,6 +1425,29 @@ router.patch(
         ]
       );
 
+      /* NOTIFY:
+         - ALL MANAGEMENT
+         - EMPLOYEE WHO CREATED THIS DELEGATION
+      */
+
+      await safeNotifyDelegationAudience(
+        Number(
+          task.createdById
+        ),
+        {
+          taskId,
+
+          type:
+            "DELEGATION_ASSIGNED",
+
+          title:
+            `Delegation #${taskId} Assigned`,
+
+          message:
+            `The delegation "${task.title}" has been assigned to ${employee.fullName}. Target date: ${targetKey}.`,
+        }
+      );
+
       return res.json({
         success: true,
 
@@ -1367,25 +1562,34 @@ router.patch(
           `
           SELECT
 
-            id,
+            t.id,
+            t.title,
+            t.createdById,
 
-            status,
-            responsibility,
+            t.status,
+            t.responsibility,
 
-            assignedEmployeeId,
+            t.assignedEmployeeId,
 
-            currentTargetDate,
+            emp.userId
+              AS assignedEmployeeUserId,
 
-            delayCount,
-            targetDateUpdateCount,
+            t.currentTargetDate,
 
-            completedAt,
-            cancelledAt
+            t.delayCount,
+            t.targetDateUpdateCount,
 
-          FROM Task
+            t.completedAt,
+            t.cancelledAt
+
+          FROM Task t
+
+          LEFT JOIN Employee emp
+            ON emp.id =
+               t.assignedEmployeeId
 
           WHERE
-            id = ?
+            t.id = ?
 
           LIMIT 1
           `,
@@ -1566,6 +1770,23 @@ router.patch(
               note
             ).trim(),
           ]
+        );
+
+        await safeNotifyDelegationAudience(
+          Number(
+            task.createdById
+          ),
+          {
+            taskId,
+            type:
+              "STATUS_CHANGED",
+            title:
+              `Delegation #${taskId} Pending`,
+            message:
+              `The delegation "${task.title}" was moved to Pending. Reason: ${String(
+                note
+              ).trim()}`,
+          }
         );
 
         return res.json({
@@ -1805,6 +2026,23 @@ router.patch(
           ]
         );
 
+        await safeNotifyDelegationAudience(
+          Number(
+            task.createdById
+          ),
+          {
+            taskId,
+            type:
+              "TARGET_REVISED",
+            title:
+              `Delegation #${taskId} Target Revised`,
+            message:
+              `The target date for "${task.title}" was revised to ${newTargetKey}. Reason: ${String(
+                delayReason
+              ).trim()}`,
+          }
+        );
+
         return res.json({
           success: true,
 
@@ -1883,6 +2121,21 @@ router.patch(
                 ).trim()
               : "Delegation completed",
           ]
+        );
+
+        await safeNotifyDelegationAudience(
+          Number(
+            task.createdById
+          ),
+          {
+            taskId,
+            type:
+              "COMPLETED",
+            title:
+              `Delegation #${taskId} Completed`,
+            message:
+              `The delegation "${task.title}" has been completed.`,
+          }
         );
 
         return res.json({
@@ -1986,6 +2239,21 @@ router.patch(
 
             progressNote,
           ]
+        );
+
+        await safeNotifyDelegationAudience(
+          Number(
+            task.createdById
+          ),
+          {
+            taskId,
+            type:
+              "STATUS_CHANGED",
+            title:
+              `Delegation #${taskId} In Progress`,
+            message:
+              `The delegation "${task.title}" is In Progress. ${progressNote}`,
+          }
         );
 
         return res.json({

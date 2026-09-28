@@ -1,28 +1,41 @@
 import express from "express";
+
 import cors from "cors";
+
 import dotenv from "dotenv";
+
 import cookieParser from "cookie-parser";
 
-import { db } from "./lib/db.js";
+import notificationsRouter from "./routes/notifications.js";
+
+import {
+  db,
+} from "./lib/db.js";
 
 import authRouter from "./routes/auth.js";
+
 import taskRouter from "./routes/tasks.js";
+
 import userRouter from "./routes/users.js";
+
 import employeeRouter from "./routes/employees.js";
+
 import dashboardRouter from "./routes/dashboard.js";
 
 import departmentsRouter from "./routes/departments.js";
 
 import {
-  requireAuth,
-} from "./middleware/auth.js";
+  startDeadlineNotificationScheduler,
+} from "./services/deadlineNotificationService.js";
 
 dotenv.config();
 
-const app = express();
+const app =
+  express();
 
 const PORT =
-  process.env.PORT || 5000;
+  process.env.PORT ||
+  5000;
 
 /* ==========================================
    MIDDLEWARE
@@ -33,13 +46,18 @@ app.use(
     origin:
       "http://localhost:5173",
 
-    credentials: true,
+    credentials:
+      true,
   })
 );
 
-app.use(cookieParser());
+app.use(
+  cookieParser()
+);
 
-app.use(express.json());
+app.use(
+  express.json()
+);
 
 /* ==========================================
    API ROUTES
@@ -75,18 +93,30 @@ app.use(
   departmentsRouter
 );
 
+app.use(
+  "/api/notifications",
+  notificationsRouter
+);
+
 /* ==========================================
    ROOT
 ========================================== */
 
-app.get("/", (req, res) => {
-  res.json({
-    success: true,
+app.get(
+  "/",
+  (
+    req,
+    res
+  ) => {
+    res.json({
+      success:
+        true,
 
-    message:
-      "Prorich Delegation Management API is running",
-  });
-});
+      message:
+        "Prorich Delegation Management API is running",
+    });
+  }
+);
 
 /* ==========================================
    HEALTH
@@ -94,17 +124,23 @@ app.get("/", (req, res) => {
 
 app.get(
   "/api/health",
-  (req, res) => {
+  (
+    req,
+    res
+  ) => {
     res.json({
-      success: true,
+      success:
+        true,
 
-      status: "OK",
+      status:
+        "OK",
 
       application:
         "Prorich Delegation Management",
 
       timestamp:
-        new Date().toISOString(),
+        new Date()
+          .toISOString(),
     });
   }
 );
@@ -115,24 +151,31 @@ app.get(
 
 app.get(
   "/api/db-health",
-  async (req, res) => {
+  async (
+    req,
+    res
+  ) => {
     try {
       const [rows] =
         await db.query(
           `
           SELECT
             COUNT(*) AS departmentCount
+
           FROM Department
           `
         );
 
       const result =
-        rows as Array<{
-          departmentCount: number;
-        }>;
+        rows as
+          Array<{
+            departmentCount:
+              number;
+          }>;
 
       return res.json({
-        success: true,
+        success:
+          true,
 
         database:
           "CONNECTED",
@@ -142,7 +185,9 @@ app.get(
             ?.departmentCount ??
           0,
       });
+
     } catch (error) {
+
       console.error(
         "DATABASE ERROR:",
         error
@@ -151,7 +196,8 @@ app.get(
       return res
         .status(500)
         .json({
-          success: false,
+          success:
+            false,
 
           database:
             "ERROR",
@@ -170,5 +216,12 @@ app.listen(
     console.log(
       `Server running on http://localhost:${PORT}`
     );
+
+    /*
+      Start automatic deadline
+      notification monitoring.
+    */
+
+    startDeadlineNotificationScheduler();
   }
 );

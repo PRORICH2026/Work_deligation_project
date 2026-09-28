@@ -1,3 +1,7 @@
+/* =====================================
+   HEADER
+===================================== */
+
 .app-fixed-header {
   position: fixed;
 
@@ -12,17 +16,24 @@
   background: #0f5a36;
 
   display: flex;
+
   align-items: center;
+
   justify-content: space-between;
 
-  padding: 0 28px;
+  padding:
+    0
+    28px;
 
   color: white;
 
   box-shadow:
     0 2px 8px
     rgba(0, 0, 0, 0.14);
+
+  box-sizing: border-box;
 }
+
 
 /* =====================================
    BRAND
@@ -36,11 +47,15 @@
   gap: 13px;
 
   cursor: pointer;
+
+  min-width: 0;
 }
 
 .app-header-logo {
   width: 56px;
   height: 56px;
+
+  flex: 0 0 56px;
 
   background: white;
 
@@ -51,12 +66,17 @@
   overflow: hidden;
 
   display: flex;
+
   align-items: center;
+
   justify-content: center;
+
+  box-sizing: border-box;
 }
 
 .app-header-logo img {
   width: 100%;
+
   height: 100%;
 
   object-fit: contain;
@@ -68,6 +88,8 @@
   display: flex;
 
   flex-direction: column;
+
+  min-width: 0;
 }
 
 .app-header-brand-text strong {
@@ -76,6 +98,8 @@
   font-weight: 700;
 
   line-height: 1.2;
+
+  white-space: nowrap;
 }
 
 .app-header-brand-text span {
@@ -84,54 +108,515 @@
   opacity: 0.85;
 
   margin-top: 3px;
+
+  white-space: nowrap;
 }
 
+
 /* =====================================
-   USER
+   RIGHT SIDE
 ===================================== */
 
-.app-header-user {
+.app-header-actions {
   display: flex;
 
   align-items: center;
 
-  gap: 16px;
+  gap: 12px;
 }
 
-.app-header-user > div {
+
+/* =====================================
+   NOTIFICATION WRAPPER
+===================================== */
+
+.notification-wrapper {
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+}
+
+
+/* =====================================
+   NOTIFICATION BELL
+===================================== */
+
+.notification-bell {
+  position: relative;
+
+  width: 42px;
+
+  height: 42px;
+
+  padding: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.08
+    );
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.35
+    );
+
+  border-radius: 7px;
+
+  color: white;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.notification-bell:hover,
+.notification-bell.active {
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.16
+    );
+
+  border-color:
+    rgba(
+      255,
+      255,
+      255,
+      0.7
+    );
+}
+
+.notification-bell-icon {
+  font-size: 19px;
+
+  line-height: 1;
+
+  display: block;
+}
+
+
+/* =====================================
+   UNREAD COUNT
+===================================== */
+
+.notification-count {
+  position: absolute;
+
+  top: -6px;
+
+  right: -7px;
+
+  min-width: 18px;
+
+  height: 18px;
+
+  padding:
+    0
+    5px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background: #dc2626;
+
+  color: #ffffff;
+
+  border:
+    2px solid
+    #0f5a36;
+
+  border-radius: 999px;
+
+  font-size: 9px;
+
+  font-weight: 800;
+
+  line-height: 1;
+
+  box-sizing: border-box;
+}
+
+
+/* =====================================
+   NOTIFICATION DROPDOWN
+===================================== */
+
+.notification-dropdown {
+  position: absolute;
+
+  top: 52px;
+
+  right: 0;
+
+  width: 380px;
+
+  max-height:
+    calc(
+      100vh - 115px
+    );
+
+  background: #ffffff;
+
+  color: #111827;
+
+  border:
+    1px solid
+    #dce4df;
+
+  border-radius: 9px;
+
+  box-shadow:
+    0 12px 32px
+    rgba(
+      15,
+      35,
+      25,
+      0.18
+    );
+
+  overflow: hidden;
+
+  z-index: 3000;
+}
+
+
+/* =====================================
+   DROPDOWN HEADER
+===================================== */
+
+.notification-dropdown-header {
+  min-height: 64px;
+
+  padding:
+    13px
+    15px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 12px;
+
+  border-bottom:
+    1px solid
+    #e5ebe7;
+
+  background: #ffffff;
+
+  box-sizing: border-box;
+}
+
+.notification-dropdown-header > div {
   display: flex;
 
   flex-direction: column;
 
-  text-align: right;
+  gap: 3px;
 }
 
-.app-header-user strong {
+.notification-dropdown-header strong {
+  color: #153f2d;
+
   font-size: 14px;
 
   font-weight: 700;
 }
 
-.app-header-user span {
+.notification-dropdown-header span {
+  color: #64748b;
+
+  font-size: 10px;
+}
+
+.notification-read-all {
+  padding: 0;
+
+  background: transparent;
+
+  border: 0;
+
+  color: #168a46;
+
+  cursor: pointer;
+
   font-size: 10px;
 
-  opacity: 0.8;
+  font-weight: 700;
 
-  text-transform: uppercase;
-
-  margin-top: 2px;
+  white-space: nowrap;
 }
+
+.notification-read-all:hover {
+  color: #0f5a36;
+
+  text-decoration: underline;
+}
+
+
+/* =====================================
+   NOTIFICATION LIST
+===================================== */
+
+.notification-list {
+  max-height: 430px;
+
+  overflow-y: auto;
+
+  background: #ffffff;
+}
+
+
+/* =====================================
+   NOTIFICATION ITEM
+===================================== */
+
+.notification-item {
+  width: 100%;
+
+  padding:
+    13px
+    15px;
+
+  display: block;
+
+  background: #ffffff;
+
+  border: 0;
+
+  border-bottom:
+    1px solid
+    #edf1ee;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  transition:
+    background 0.15s ease;
+}
+
+.notification-item:hover {
+  background: #f7faf8;
+}
+
+.notification-item.unread {
+  background: #f0f9f4;
+
+  border-left:
+    3px solid
+    #168a46;
+
+  padding-left: 12px;
+}
+
+.notification-item.unread:hover {
+  background: #e9f7ef;
+}
+
+
+/* =====================================
+   NOTIFICATION ITEM TOP
+===================================== */
+
+.notification-item-top {
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 12px;
+}
+
+.notification-item-top strong {
+  color: #153f2d;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  line-height: 1.35;
+}
+
+.notification-unread-dot {
+  width: 7px;
+
+  height: 7px;
+
+  flex:
+    0
+    0
+    7px;
+
+  margin-top: 4px;
+
+  background: #168a46;
+
+  border-radius: 50%;
+}
+
+
+/* =====================================
+   MESSAGE
+===================================== */
+
+.notification-item p {
+  margin:
+    6px
+    0
+    8px;
+
+  color: #475569;
+
+  font-size: 10px;
+
+  line-height: 1.45;
+
+  white-space: normal;
+}
+
+
+/* =====================================
+   ITEM FOOTER
+===================================== */
+
+.notification-item-bottom {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 10px;
+}
+
+.notification-task-id {
+  color: #168a46;
+
+  font-size: 9px;
+
+  font-weight: 700;
+}
+
+.notification-time {
+  margin-left: auto;
+
+  color: #94a3b8;
+
+  font-size: 9px;
+}
+
+
+/* =====================================
+   EMPTY / LOADING / ERROR
+===================================== */
+
+.notification-state {
+  padding:
+    35px
+    20px;
+
+  text-align: center;
+
+  color: #64748b;
+
+  font-size: 11px;
+}
+
+.notification-state-error {
+  color: #b91c1c;
+}
+
+.notification-empty {
+  min-height: 160px;
+
+  padding:
+    28px
+    20px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-align: center;
+
+  box-sizing: border-box;
+}
+
+.notification-empty-icon {
+  margin-bottom: 9px;
+
+  font-size: 24px;
+
+  opacity: 0.65;
+}
+
+.notification-empty strong {
+  color: #334155;
+
+  font-size: 12px;
+
+  margin-bottom: 5px;
+}
+
+.notification-empty span {
+  color: #94a3b8;
+
+  font-size: 10px;
+}
+
+
+/* =====================================
+   LOGOUT
+===================================== */
 
 .header-logout {
   background: transparent;
 
   border:
     1px solid
-    rgba(255, 255, 255, 0.55);
+    rgba(
+      255,
+      255,
+      255,
+      0.55
+    );
 
   color: white;
 
-  padding: 10px 17px;
+  padding:
+    10px
+    17px;
 
   border-radius: 6px;
 
@@ -140,6 +625,10 @@
   font-size: 13px;
 
   font-weight: 600;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .header-logout:hover {
@@ -150,7 +639,16 @@
       255,
       0.1
     );
+
+  border-color:
+    rgba(
+      255,
+      255,
+      255,
+      0.8
+    );
 }
+
 
 /* =====================================
    CONTENT BELOW FIXED HEADER + NAV
@@ -162,6 +660,7 @@
   min-height: 100vh;
 }
 
+
 /* =====================================
    MOBILE
 ===================================== */
@@ -171,12 +670,24 @@
   .app-fixed-header {
     height: 72px;
 
-    padding: 0 12px;
+    padding:
+      0
+      12px;
   }
 
   .app-header-logo {
     width: 48px;
+
     height: 48px;
+
+    flex:
+      0
+      0
+      48px;
+  }
+
+  .app-header-brand {
+    gap: 9px;
   }
 
   .app-header-brand-text strong {
@@ -187,18 +698,105 @@
     font-size: 8px;
   }
 
-  .app-header-user > div {
-    display: none;
+  .app-header-actions {
+    gap: 8px;
+  }
+
+  .notification-bell {
+    width: 36px;
+
+    height: 36px;
+  }
+
+  .notification-bell-icon {
+    font-size: 16px;
+  }
+
+  .notification-count {
+    top: -5px;
+
+    right: -6px;
+
+    min-width: 17px;
+
+    height: 17px;
+
+    font-size: 8px;
   }
 
   .header-logout {
-    padding: 8px 11px;
+    padding:
+      8px
+      11px;
 
     font-size: 11px;
   }
 
+  .notification-dropdown {
+    position: fixed;
+
+    top: 78px;
+
+    left: 10px;
+
+    right: 10px;
+
+    width: auto;
+
+    max-height:
+      calc(
+        100vh - 90px
+      );
+  }
+
+  .notification-list {
+    max-height:
+      calc(
+        100vh - 170px
+      );
+  }
+
+  .notification-dropdown-header {
+    padding:
+      12px
+      13px;
+  }
+
+  .notification-item {
+    padding:
+      12px
+      13px;
+  }
+
+  .notification-item.unread {
+    padding-left: 10px;
+  }
+
   .app-layout-content {
     padding-top: 134px;
+  }
+
+}
+
+
+/* =====================================
+   VERY SMALL MOBILE
+===================================== */
+
+@media (max-width: 420px) {
+
+  .app-header-brand-text span {
+    display: none;
+  }
+
+  .app-header-brand-text strong {
+    font-size: 12px;
+  }
+
+  .header-logout {
+    padding:
+      8px
+      9px;
   }
 
 }

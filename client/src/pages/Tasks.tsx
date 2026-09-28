@@ -797,6 +797,85 @@ export default function Tasks() {
   }
 
   /* ==========================================
+     DUE STATUS
+
+     Uses CURRENT / REVISED TARGET DATE.
+     Does not change the real delegation status.
+  ========================================== */
+
+  function getDueStatus(
+    task: Task
+  ) {
+    if (
+      task.status === "COMPLETED" ||
+      task.status === "CANCELLED" ||
+      !task.currentTargetDate
+    ) {
+      return {
+        label: "-",
+        className: "",
+      };
+    }
+
+    const target =
+      new Date(
+        task.currentTargetDate
+      );
+
+    if (
+      Number.isNaN(
+        target.getTime()
+      )
+    ) {
+      return {
+        label: "-",
+        className: "",
+      };
+    }
+
+    const today =
+      new Date();
+
+    const todayKey =
+      today.getFullYear() * 10000 +
+      (today.getMonth() + 1) * 100 +
+      today.getDate();
+
+    const targetKey =
+      target.getFullYear() * 10000 +
+      (target.getMonth() + 1) * 100 +
+      target.getDate();
+
+    if (
+      targetKey <
+      todayKey
+    ) {
+      return {
+        label: "OVERDUE",
+        className:
+          "due-overdue",
+      };
+    }
+
+    if (
+      targetKey ===
+      todayKey
+    ) {
+      return {
+        label: "DUE TODAY",
+        className:
+          "due-today",
+      };
+    }
+
+    return {
+      label: "ON TIME",
+      className:
+        "due-on-time",
+    };
+  }
+
+  /* ==========================================
      MINIMUM REVISED TARGET
   ========================================== */
 
@@ -967,7 +1046,6 @@ export default function Tasks() {
                 Priority
               </th>
 
-              <th>EA</th>
 
               <th>
                 Employee
@@ -975,6 +1053,10 @@ export default function Tasks() {
 
               <th>
                 Target
+              </th>
+
+              <th>
+                Due Status
               </th>
 
               <th>
@@ -1049,12 +1131,6 @@ export default function Tasks() {
                       }
                     </td>
 
-                    <td>
-                      {
-                        task.assignedEaName ||
-                        "-"
-                      }
-                    </td>
 
                     <td>
                       {
@@ -1066,6 +1142,25 @@ export default function Tasks() {
                     <td>
                       {formatDateOnly(
                         task.currentTargetDate
+                      )}
+                    </td>
+
+                    <td>
+                      {getDueStatus(
+                        task
+                      ).label ===
+                      "-" ? (
+                        "-"
+                      ) : (
+                        <span
+                          className={`due-pill ${getDueStatus(
+                            task
+                          ).className}`}
+                        >
+                          {getDueStatus(
+                            task
+                          ).label}
+                        </span>
                       )}
                     </td>
 

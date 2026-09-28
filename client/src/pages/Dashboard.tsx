@@ -56,6 +56,18 @@ interface Task {
   updatedAt?: string;
 }
 
+type DueStatusKey =
+  | "ON_TIME"
+  | "DUE_TODAY"
+  | "OVERDUE"
+  | "NONE";
+
+interface DueStatusResult {
+  key: DueStatusKey;
+  label: string;
+  className: string;
+}
+
 const managementRoles = [
   "ADMIN",
   "MD",
@@ -104,6 +116,11 @@ export default function Dashboard() {
   const [
     statusFilter,
     setStatusFilter,
+  ] = useState("");
+
+  const [
+    dueStatusFilter,
+    setDueStatusFilter,
   ] = useState("");
 
   const [
@@ -182,7 +199,6 @@ export default function Dashboard() {
     } finally {
 
       setLoading(false);
-
     }
   }
 
@@ -238,7 +254,6 @@ export default function Dashboard() {
 
   const departments =
     useMemo(() => {
-
       return Array.from(
         new Set(
           tasks
@@ -249,7 +264,6 @@ export default function Dashboard() {
             .filter(Boolean)
         )
       ).sort();
-
     }, [tasks]);
 
   /* ==========================================
@@ -258,7 +272,6 @@ export default function Dashboard() {
 
   const employees =
     useMemo(() => {
-
       return Array.from(
         new Set(
           tasks
@@ -274,8 +287,98 @@ export default function Dashboard() {
             )
         )
       ).sort();
-
     }, [tasks]);
+
+  /* ==========================================
+     DUE STATUS
+
+     This is calculated from currentTargetDate.
+     If target was revised, currentTargetDate
+     already contains the latest target.
+  ========================================== */
+
+  function getDueStatus(
+    task: Task
+  ): DueStatusResult {
+    if (
+      task.status ===
+        "COMPLETED" ||
+      task.status ===
+        "CANCELLED" ||
+      !task.currentTargetDate
+    ) {
+      return {
+        key: "NONE",
+        label: "-",
+        className: "",
+      };
+    }
+
+    const target =
+      new Date(
+        task.currentTargetDate
+      );
+
+    if (
+      Number.isNaN(
+        target.getTime()
+      )
+    ) {
+      return {
+        key: "NONE",
+        label: "-",
+        className: "",
+      };
+    }
+
+    const today =
+      new Date();
+
+    const todayKey =
+      today.getFullYear() *
+        10000 +
+      (today.getMonth() + 1) *
+        100 +
+      today.getDate();
+
+    const targetKey =
+      target.getFullYear() *
+        10000 +
+      (target.getMonth() + 1) *
+        100 +
+      target.getDate();
+
+    if (
+      targetKey <
+      todayKey
+    ) {
+      return {
+        key: "OVERDUE",
+        label: "OVERDUE",
+        className:
+          "due-overdue",
+      };
+    }
+
+    if (
+      targetKey ===
+      todayKey
+    ) {
+      return {
+        key: "DUE_TODAY",
+        label: "DUE TODAY",
+        className:
+          "due-today",
+      };
+    }
+
+    return {
+      key: "ON_TIME",
+      label: "ON TIME",
+      className:
+        "due-on-time",
+    };
+  }
 
   /* ==========================================
      FILTER + SORT
@@ -283,22 +386,15 @@ export default function Dashboard() {
 
   const filteredTasks =
     useMemo(() => {
-
       const statusOrder:
-        Record<string, number> =
-      {
-        NEW: 1,
-
-        IN_PROGRESS: 2,
-
-        ON_HOLD: 3,
-
-        DELAYED: 3,
-
-        COMPLETED: 4,
-
-        CANCELLED: 5,
-      };
+        Record<string, number> = {
+          NEW: 1,
+          IN_PROGRESS: 2,
+          ON_HOLD: 3,
+          DELAYED: 3,
+          COMPLETED: 4,
+          CANCELLED: 5,
+        };
 
       const search =
         searchText
@@ -308,20 +404,20 @@ export default function Dashboard() {
       const filtered =
         tasks.filter(
           (task) => {
-
             /* SEARCH */
 
             if (search) {
-
               const searchableText = [
                 task.id,
                 `#${task.id}`,
                 task.title,
                 task.departmentName,
                 task.createdByName,
-                task.assignedEaName,
                 task.assignedEmployeeName,
                 task.status,
+                getDueStatus(
+                  task
+                ).label,
               ]
                 .filter(Boolean)
                 .join(" ")
@@ -334,7 +430,6 @@ export default function Dashboard() {
               ) {
                 return false;
               }
-
             }
 
             /* DEPARTMENT */
@@ -362,12 +457,10 @@ export default function Dashboard() {
             if (
               statusFilter
             ) {
-
               if (
                 statusFilter ===
                 "PENDING"
               ) {
-
                 if (
                   getStatusGroup(
                     task.status
@@ -381,20 +474,28 @@ export default function Dashboard() {
                 task.status !==
                 statusFilter
               ) {
-
                 return false;
-
               }
-
             }
 
-            /* FROM / TO DATE */
+            /* DUE STATUS */
+
+            if (
+              dueStatusFilter &&
+              getDueStatus(
+                task
+              ).key !==
+                dueStatusFilter
+            ) {
+              return false;
+            }
+
+            /* FROM / TO CREATED DATE */
 
             if (
               fromDate ||
               toDate
             ) {
-
               const created =
                 new Date(
                   task.createdAt
@@ -411,7 +512,6 @@ export default function Dashboard() {
               if (
                 fromDate
               ) {
-
                 const from =
                   new Date(
                     `${fromDate}T00:00:00`
@@ -422,13 +522,11 @@ export default function Dashboard() {
                 ) {
                   return false;
                 }
-
               }
 
               if (
                 toDate
               ) {
-
                 const to =
                   new Date(
                     `${toDate}T23:59:59.999`
@@ -439,19 +537,15 @@ export default function Dashboard() {
                 ) {
                   return false;
                 }
-
               }
-
             }
 
             return true;
-
           }
         );
 
       return filtered.sort(
         (a, b) => {
-
           const aOrder =
             statusOrder[
               a.status
@@ -480,7 +574,6 @@ export default function Dashboard() {
               a.createdAt
             ).getTime()
           );
-
         }
       );
 
@@ -490,6 +583,7 @@ export default function Dashboard() {
       departmentFilter,
       employeeFilter,
       statusFilter,
+      dueStatusFilter,
       fromDate,
       toDate,
     ]);
@@ -500,15 +594,11 @@ export default function Dashboard() {
 
   function clearFilters() {
     setSearchText("");
-
     setDepartmentFilter("");
-
     setEmployeeFilter("");
-
     setStatusFilter("");
-
+    setDueStatusFilter("");
     setFromDate("");
-
     setToDate("");
   }
 
@@ -773,6 +863,46 @@ export default function Dashboard() {
 
           </div>
 
+          {/* DUE STATUS */}
+
+          <div className="delegation-filter-field">
+
+            <label>
+              Due Status
+            </label>
+
+            <select
+              value={
+                dueStatusFilter
+              }
+
+              onChange={(e) =>
+                setDueStatusFilter(
+                  e.target.value
+                )
+              }
+            >
+
+              <option value="">
+                All
+              </option>
+
+              <option value="ON_TIME">
+                On Time
+              </option>
+
+              <option value="DUE_TODAY">
+                Due Today
+              </option>
+
+              <option value="OVERDUE">
+                Overdue
+              </option>
+
+            </select>
+
+          </div>
+
           {/* FROM DATE */}
 
           <div className="delegation-filter-field">
@@ -890,19 +1020,15 @@ export default function Dashboard() {
                 </th>
 
                 <th>
-                  EA
-                </th>
-
-                <th>
                   Employee
                 </th>
 
                 <th>
-                  Start Date
+                  Target Date
                 </th>
 
                 <th>
-                  Target Date
+                  Due Status
                 </th>
 
                 <th>
@@ -925,7 +1051,7 @@ export default function Dashboard() {
                 <tr>
 
                   <td
-                    colSpan={10}
+                    colSpan={9}
 
                     className="all-delegation-empty"
                   >
@@ -937,102 +1063,117 @@ export default function Dashboard() {
               ) : (
 
                 filteredTasks.map(
-                  (task) => (
+                  (task) => {
+                    const dueStatus =
+                      getDueStatus(
+                        task
+                      );
 
-                    <tr
-                      key={
-                        task.id
-                      }
+                    return (
 
-                      className={
-                        task.status ===
-                        "COMPLETED"
-                          ? "completed-row"
-                          : ""
-                      }
-                    >
+                      <tr
+                        key={
+                          task.id
+                        }
 
-                      <td>
-                        #{task.id}
-                      </td>
+                        className={
+                          task.status ===
+                          "COMPLETED"
+                            ? "completed-row"
+                            : ""
+                        }
+                      >
 
-                      <td>
-                        <strong>
+                        <td>
+                          #{task.id}
+                        </td>
+
+                        <td>
+                          <strong>
+                            {
+                              task.title
+                            }
+                          </strong>
+                        </td>
+
+                        <td>
                           {
-                            task.title
+                            task.departmentName
                           }
-                        </strong>
-                      </td>
+                        </td>
 
-                      <td>
-                        {
-                          task.departmentName
-                        }
-                      </td>
+                        <td>
+                          {
+                            task.createdByName
+                          }
+                        </td>
 
-                      <td>
-                        {
-                          task.createdByName
-                        }
-                      </td>
+                        <td>
+                          {
+                            task.assignedEmployeeName ||
+                            "-"
+                          }
+                        </td>
 
-                      <td>
-                        {
-                          task.assignedEaName ||
-                          "-"
-                        }
-                      </td>
-
-                      <td>
-                        {
-                          task.assignedEmployeeName ||
-                          "-"
-                        }
-                      </td>
-
-                      <td>
-                        {formatDateOnly(
-                          task.startDate
-                        )}
-                      </td>
-
-                      <td>
-                        {formatDateOnly(
-                          task.currentTargetDate
-                        )}
-                      </td>
-
-                      <td>
-
-                        <span
-                          className={`delegation-status status-${task.status.toLowerCase()}`}
-                        >
-                          {formatStatus(
-                            task.status
+                        <td>
+                          {formatDateOnly(
+                            task.currentTargetDate
                           )}
-                        </span>
+                        </td>
 
-                      </td>
+                        <td>
 
-                      <td>
+                          {dueStatus.label ===
+                          "-" ? (
 
-                        <button
-                          className="delegation-view-button"
+                            "-"
 
-                          onClick={() =>
-                            navigate(
-                              `/tasks/${task.id}`
-                            )
-                          }
-                        >
-                          View
-                        </button>
+                          ) : (
 
-                      </td>
+                            <span
+                              className={`delegation-due-status ${dueStatus.className}`}
+                            >
+                              {
+                                dueStatus.label
+                              }
+                            </span>
 
-                    </tr>
+                          )}
 
-                  )
+                        </td>
+
+                        <td>
+
+                          <span
+                            className={`delegation-status status-${task.status.toLowerCase()}`}
+                          >
+                            {formatStatus(
+                              task.status
+                            )}
+                          </span>
+
+                        </td>
+
+                        <td>
+
+                          <button
+                            className="delegation-view-button"
+
+                            onClick={() =>
+                              navigate(
+                                `/tasks/${task.id}`
+                              )
+                            }
+                          >
+                            View
+                          </button>
+
+                        </td>
+
+                      </tr>
+
+                    );
+                  }
                 )
               )}
 
