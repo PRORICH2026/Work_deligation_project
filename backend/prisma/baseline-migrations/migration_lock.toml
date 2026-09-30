@@ -1,0 +1,2 @@
+# Canonical history for fresh databases and future migrations.
+provider = "mysql"
