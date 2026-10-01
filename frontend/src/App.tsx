@@ -17,6 +17,10 @@ import NewDelegation from "./pages/NewDelegation";
 import AppLayout from "./layouts/AppLayout";
 
 import HomeRedirect from "./routes/HomeRedirect";
+import RequireSession from "./routes/RequireSession";
+import RequireModule from "./routes/RequireModule";
+import Performance from "./pages/Performance";
+import EmployeeManagement from "./pages/EmployeeManagement";
 
 export default function App() {
   return (
@@ -33,9 +37,8 @@ export default function App() {
 
         {/* LOGGED-IN APPLICATION */}
 
-        <Route
-          element={<AppLayout />}
-        >
+        <Route element={<RequireSession />}>
+        <Route element={<AppLayout />}>
 
           <Route
             path="/dashboard"
@@ -47,7 +50,7 @@ export default function App() {
           <Route
             path="/management/delegations"
             element={
-              <Dashboard />
+              <RequireModule path="/management/delegations"><Dashboard /></RequireModule>
             }
           />
 
@@ -72,6 +75,14 @@ export default function App() {
             }
           />
 
+          <Route path="/performance" element={
+            <RequireModule path="/performance"><Performance /></RequireModule>
+          } />
+          <Route path="/employee-management" element={
+            <RequireModule path="/employee-management"><EmployeeManagement /></RequireModule>
+          } />
+
+        </Route>
         </Route>
 
       </Routes>

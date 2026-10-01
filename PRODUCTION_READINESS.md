@@ -1,3 +1,26 @@
+Current review: 2026-10-01, after simplified SLA Performance implementation.
+
+READY FOR GIT COMMIT. NOT READY FOR RAILWAY DEPLOYMENT until the production prerequisites below are verified. No commit, push, deployment, production migration or database row write was performed in this SLA follow-up. Earlier dated verification below is retained as historical evidence; its nine-test totals are superseded by the results here.
+
+- Frontend build PASS; backend build PASS; compiled backend startup/health/CORS PASS with scheduler stubbed.
+- Existing regression tests PASS (17 backend + 9 frontend); current Performance tests PASS (20). Total 46 tests.
+- Read-only local SLA comparisons PASS across all nine departments; exact assignment/EOD and timezone boundary tests PASS. Headless desktop/mobile checks PASS, including role-protected pages and centered Employee Management.
+- Employee Management retains all columns/actions. Performance uses on-time percentages only, with assignment primary eaFirstActionAt / fallback NEW -> IN_PROGRESS history. Full formulas, timestamp rules, test evidence and UI columns are in PERFORMANCE_SCORING.md.
+- Current schema, frozen legacy migrations, canonical baseline and Prisma configs match HEAD byte-for-byte. No schema migration required. The previously verified baseline workflow remains unchanged; it was reviewed, not replayed again. Future changes use prisma.baseline.config.ts and prisma/baseline-migrations, with the documented one-time adoption for legacy databases.
+- Git is intentionally dirty with the earlier role-access/Employee Management changes and current Performance changes. No files staged by this work. Real .env files, node_modules and dist are untracked/ignored. Tracked environment files are examples only. Scanning repository candidates found no actual configured DATABASE_URL/JWT_SECRET values; values were never printed.
+
+Deployment prerequisites still outstanding:
+
+1. Verify production MySQL NOW()/CURRENT_TIMESTAMP uses India wall time (+05:30), consistent with existing DATETIME data. Performance explicitly interprets stored event times as India time and targets as India dates; it is independent of browser/Node/database session timezone. A UTC-configured production writer would violate the established storage convention. Verify MySQL session settings, not only Node TZ. Historical imports must not mix UTC and India DATETIME values.
+2. Supply and validate production variable names: frontend VITE_API_URL; backend NODE_ENV, FRONTEND_URL, DATABASE_URL, JWT_SECRET, PORT; separately MIGRATION_DATABASE_URL for a later authorized baseline deployment. Never publish secret values or seed local test accounts in production.
+3. Confirm frontend static serving with SPA fallback and backend service roots/build/start commands. Test secure login/logout cookies on final HTTPS domains. That live-domain test has not been performed.
+4. Validate canonical baseline on the target Linux/MySQL service. Local replay previously passed; the case-sensitive production host has not been exercised. Do not replay baseline CREATE statements over an existing populated legacy database.
+5. Keep the existing notification scheduler at one backend replica until multi-instance deduplication is designed; scheduler behavior was not changed.
+
+No code blocker remains for review/commit. Deployment remains a separate, unperformed step requiring the above environment checks. The application has no new score columns or schema changes.
+
+---
+Historical production/migration review (before current feature follow-up):
 Production preparation and disposable migration verification completed. READY FOR GIT COMMIT (subject to user approval); nothing has been committed, pushed or deployed. Fresh baseline replay and the future migration workflow pass. Deployment-specific warnings remain below.
 
 No deployment, commit, push or real database write was performed. Migration application, baseline registration and a temporary test fixture were limited to `delegation_management_migration_test`. Existing client/server deletions and frontend/backend additions were already present when this review began. Real environment files were not edited or printed.

@@ -95,6 +95,32 @@ test('non-management roles cannot cancel, assign, or update', async () => {
   }
 });
 
+test('every logged-in role can create delegations while unauthenticated requests cannot', async () => {
+  const originalQuery = db.query;
+  db.query = async (sql, params) => {
+    if (sql.includes('FROM Department')) return [[{ id: 1 }]];
+    if (sql.includes("role = 'EA'")) return [[{ id: 2, name: 'Test EA' }]];
+    if (sql.includes('INSERT INTO Task') || sql.includes('INSERT INTO Notification')) {
+      writes.push({ sql, params });
+      return [{ insertId: 1 }];
+    }
+    if (sql.includes('role IN')) return [[{ id: 2 }]];
+    throw new Error('Unexpected creation query');
+  };
+  try {
+    const body = { title: 'Test', description: 'Test delegation', priority: 'MEDIUM', departmentId: 1, assignedEaId: 2 };
+    for (const role of ['ADMIN', 'HR', 'EA', 'MD', 'EMPLOYEE', 'DEPARTMENT_HOD', 'PROCESS', 'SC_TEAM']) {
+      reset();
+      const response = await request('/api/tasks', role, body, 'POST');
+      assert.equal(response.status, 201, role);
+      assert.ok(writes.some(write => write.sql.includes('INSERT INTO TaskStatusHistory')));
+    }
+    reset();
+    assert.equal((await request('/api/tasks', null, body, 'POST')).status, 401);
+    assert.equal(writes.length, 0);
+  } finally { db.query = originalQuery; }
+});
+
 test('cancellation rejects missing, blank, and non-string reasons', async () => {
   for (const reason of [undefined, '', '   ', 1, {}]) {
     reset();

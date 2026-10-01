@@ -63,7 +63,7 @@ router.post("/login", async (req, res) => {
     if (!user.isActive) {
       return res.status(403).json({
         success: false,
-        message: "This user account is inactive",
+        message: "Your account is inactive. Please contact administration.",
       });
     }
 

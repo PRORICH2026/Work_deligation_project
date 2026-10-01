@@ -1,0 +1,31 @@
+.employee-management { width: calc(100% - 44px); max-width: 1276px; min-width: 0; margin: 16px auto 60px; box-sizing: border-box; background: white; border: 1px solid #dce4df; border-radius: 9px; padding: 24px; box-shadow: 0 3px 12px #173c2110; }
+.em-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+.em-heading h1 { margin: 0; font-size: 24px; color: #183f2b; }
+.employee-management button { border: 1px solid #cbdad0; border-radius: 6px; padding: 9px 13px; background: white; color: #24613a; cursor: pointer; font: inherit; }
+.employee-management button.em-primary { background: #237a43; color: white; border-color: #237a43; }
+.employee-management button:disabled { opacity: .5; cursor: not-allowed; }
+.em-filters { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.employee-management label { display: flex; flex-direction: column; gap: 7px; font-size: 14px; font-weight: 600; color: #304f3c; }
+.employee-management input, .employee-management select { box-sizing: border-box; width: 100%; min-width: 0; padding: 10px 12px; border: 1px solid #cbdad0; border-radius: 6px; background: white; color: #243b2c; font: inherit; }
+.employee-management :focus-visible { outline: 2px solid #237a43; outline-offset: 2px; }
+.em-table-wrap { overflow-x: auto; }
+.em-table-wrap table { border-collapse: collapse; width: 100%; min-width: 850px; font-size: 14px; }
+.em-table-wrap th, .em-table-wrap td { padding: 14px 12px; text-align: left; border-bottom: 1px solid #e5ece7; }
+.em-table-wrap th { background: #edf5ef; color: #28583a; white-space: nowrap; }
+.em-table-wrap td { overflow-wrap: anywhere; }
+.em-badge { display: inline-block; padding: 4px 9px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+.em-badge.active { background: #e0f3e7; color: #216538; }
+.em-badge.inactive { background: #f8e5e5; color: #943c3c; }
+.em-actions { display: flex; gap: 8px; white-space: nowrap; }
+.em-actions button { font-size: 12px; padding: 7px 9px; }
+.em-error, .em-success { padding: 12px; border-radius: 6px; }
+.em-error { color: #8d2929; background: #fff0f0; }
+.em-success { color: #216538; background: #e0f3e7; }
+.em-dialog { margin: auto; box-sizing: border-box; width: min(520px, calc(100% - 32px)); max-height: 90vh; border: 1px solid #dce4df; border-radius: 10px; padding: 24px; color: #243b2c; }
+.em-dialog::backdrop { background: #102d2080; }
+.em-dialog h2 { margin: 0 0 20px; font-size: 21px; }
+.em-dialog fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 14px; }
+.em-dialog small { color: #65776b; }
+.em-modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+@media (max-width: 700px) { .employee-management { padding: 16px; } .em-heading { align-items: flex-start; flex-direction: column; } .em-filters { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .employee-management { width: calc(100% - 24px); } }

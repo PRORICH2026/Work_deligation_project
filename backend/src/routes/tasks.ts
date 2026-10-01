@@ -33,6 +33,9 @@ const delegationCreatorRoles = [
   "HR",
   "EA",
   "EMPLOYEE",
+  "DEPARTMENT_HOD",
+  "PROCESS",
+  "SC_TEAM",
 ];
 
 function isManagementRole(

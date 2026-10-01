@@ -23,6 +23,7 @@ import employeeRouter from "./routes/employees.js";
 import dashboardRouter from "./routes/dashboard.js";
 
 import departmentsRouter from "./routes/departments.js";
+import performanceRouter from "./routes/performance.js";
 
 import {
   startDeadlineNotificationScheduler,
@@ -76,6 +77,8 @@ app.use((req, res, next) => {
 /* ==========================================
    API ROUTES
 ========================================== */
+
+app.use("/api/performance", performanceRouter);
 
 app.use(
   "/api/auth",
