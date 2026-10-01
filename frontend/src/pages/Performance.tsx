@@ -63,7 +63,6 @@ export default function Performance() {
   };
   return <div className="performance-page">
     <h1>Performance &amp; Scoring</h1>
-    <p className="performance-note">Planned time vs actual time. Date filters select delegations by creation date in India. Results reflect the latest outcomes, not a historical end-of-period snapshot.</p>
     <div className="performance-filters">
       <label>Department<select value={filters.departmentId} onChange={e => change('departmentId', e.target.value)}><option value="">All Departments</option>{data?.departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}</select></label>
       <label>Performance Type<select value={filters.type} onChange={e => change('type', e.target.value)}><option value="ALL">All</option><option value="EMPLOYEE">Employee</option><option value="EA">EA</option></select></label>
@@ -75,7 +74,7 @@ export default function Performance() {
     {error && <p className="performance-error" role="alert">{error} <button onClick={() => setRetry(n => n + 1)}>Retry</button></p>}
     {loading ? <p role="status">Loading performance...</p> : !error && data && <>
       <div className="performance-stats">{[['People', data.summary.totalPeople], ['Delegations', data.summary.totalDelegations], ['On Time', data.summary.onTime], ['Delayed', data.summary.delayed]].map(([label, value]) => <div key={label} className="task-stat"><span>{label}</span><strong>{value}</strong></div>)}</div>
-      <p className="performance-note">On Time and Delayed count unique SLA checkpoints for the displayed people. Shared employee/EA outcomes count once. Cancelled tasks and not-due checkpoints do not affect scores. Unattributed EA delegations in the selected date/department cohort: {data.summary.unattributed}.</p>
+      
       {filters.type !== 'EA' && renderTable('EMPLOYEE')}
       {filters.type !== 'EMPLOYEE' && renderTable('EA')}
       <details className="performance-method"><summary>How scoring works</summary>
